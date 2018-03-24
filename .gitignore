@@ -19,5 +19,6 @@
 
 # my original
 /vendor/bundle/
+.DS_Store
 
 .byebug_history
