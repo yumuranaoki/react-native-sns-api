@@ -1,22 +1,15 @@
 class PostsController < ApplicationController
   def create
-    logger.debug("デバッグ: #{params}")
-    place = params[:place][:text]
-    content = params[:content][:text]
-    images = params[:imageData][:_parts]
-    image_uri = []
-    images.each do |image|
-      #image[1]が常に使用可能かは要調査
-      image_uri << image[1][:uri]
-    end
-    logger.debug(image_uri)
+    post_params = params[:post]
+    place = post_params.split(',')[0].split(':')[2][1..-3]
+    content = post_params.split(',')[1].split(':')[2][1..-4]
+    image_params = params[:image]
     post = Post.new(place: place, content: content)
     if post.save
       #ここにImageのインスタンスの作成
       #Image class belong to Post Class
-      image_uri.each do |uri|
-        post.images.create(uri: uri)
-      end
+      image = post.images.build(img: image_params)
+      image.save!
     end
   end
 
@@ -24,12 +17,17 @@ class PostsController < ApplicationController
     post = []
     posts = Post.all
     posts.each do |p|
-      image_uri_arr = []
+      image_arr = []
       p.images.each do |image|
-        image_uri_arr << image.uri
+        image_arr << image.img
       end
-      post << { "place": p.place, "content": p.content, "image_uri_arr": image_uri_arr }
+      post << { "place": p.place, "content": p.content, "image_arr": image_arr[0] }
     end
     render json: post
   end
+
+  private
+    def post_params
+
+    end
 end
