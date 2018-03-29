@@ -10,6 +10,9 @@ class PostsController < ApplicationController
       #Image class belong to Post Class
       image = post.images.build(img: image_params)
       image.save!
+      url = image.img.url
+      image.url = url
+      image.save!
     end
   end
 
